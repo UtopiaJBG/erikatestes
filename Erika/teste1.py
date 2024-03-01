@@ -179,13 +179,16 @@ def main():
                 preco_total_cirurgia += quantidade_subunidades_utilizadas * preco_por_subunidade
 
                 # Adiciona as informações à tabela_quantidades
-                tabela_quantidades = tabela_quantidades.append({
-                    "Remedio": remedio,
-                    "Quantidade Total": quantidade_utilizada,
-                    "Quantidade de Subunidades": quantidade_subunidades_utilizadas,
-                    "Preco Total": quantidade_utilizada * preco_por_unidade + quantidade_subunidades_utilizadas * preco_por_subunidade
-                }, ignore_index=True)
+             # Creating an empty DataFrame
+                tabela_quantidades = pd.DataFrame()
 
+# Appending the new row
+                tabela_quantidades = tabela_quantidades.append({
+                        "Remedio": remedio,
+                        "Quantidade Total": quantidade_utilizada,
+                        "Quantidade de Subunidades": quantidade_subunidades_utilizadas,
+                        "Preco Total": quantidade_utilizada * preco_por_unidade + quantidade_subunidades_utilizadas * preco_por_subunidade
+                        }, ignore_index=True)
         # Exibe a tabela_quantidades
         st.subheader("Tabela de Quantidades")
         st.write(tabela_quantidades)
