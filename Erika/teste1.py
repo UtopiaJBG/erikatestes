@@ -8,7 +8,6 @@ def load_data():
     except FileNotFoundError:
         df = pd.DataFrame(columns=["Remedio", "Data de Validade", "Quantia"])
     df["Data de Validade"] = pd.to_datetime(df["Data de Validade"])
-
     df["Data de Validade"] = df["Data de Validade"].dt.strftime("%d/%m/%Y")    
     return df
 
@@ -23,7 +22,7 @@ def main():
 
     df = load_data()
 
-    menu = ["Adicionar Medicamento", "Editar Medicamento", "Excluir Medicamento", "Visualizar Medicamentos"]
+    menu = ["Adicionar Medicamento", "Editar Medicamento", "Excluir Medicamento", "Visualizar Medicamentos", "Gastos na Cirurgia"]
     choice = st.sidebar.selectbox("Selecione uma opção:", menu)
 
     if choice == "Adicionar Medicamento":
@@ -32,10 +31,18 @@ def main():
         remedio = st.text_input("Nome do Medicamento:")
         data_validade = st.date_input("Data de Validade:", value=get_current_date(), format="DD/MM/YYYY")
         quantia = st.number_input("Quantidade:", min_value=1, step=1)
+        preco_unidade = st.number_input("Preço por Unidade:")
+        preco_por_pilula = 0
+        pilulas_por_unidade = 1
 
-        # Adiciona automaticamente a data de validade ao nome do medicamento
-        remedio_com_data = f"{remedio} - {data_validade.strftime('%d-%m-%Y')}"  
-        novo_dado = {"Remedio": remedio_com_data, "Data de Validade": data_validade, "Quantia": quantia}
+        if st.checkbox("Medicamento em pílulas"):
+            preco_por_pilula = st.number_input("Preço por Pílula:")
+            pilulas_por_unidade = st.number_input("Quantidade de Pílulas por Unidade:", min_value=1, step=1)
+
+        remedio_com_data = f"{remedio} - {data_validade.strftime('%d-%m-%Y')}"
+        novo_dado = {"Remedio": remedio_com_data, "Data de Validade": data_validade, "Quantia": quantia,
+                     "Preco por Unidade": preco_unidade, "Preco por Pilula": preco_por_pilula,
+                     "Pilulas por Unidade": pilulas_por_unidade}
 
         if st.button("Adicionar"):
             df = pd.concat([df, pd.DataFrame([novo_dado])], ignore_index=True)
@@ -136,5 +143,22 @@ def main():
             else:
                 st.warning("Por favor, escolha um medicamento válido.")
             
+    elif choice == "Gastos na Cirurgia":
+        st.header("Gastos na Cirurgia")
+
+        # Lógica para lidar com os gastos na cirurgia
+        valor_cirurgia = st.number_input("Valor total da cirurgia:")
+        num_pilulas = st.number_input("Quantidade de pílulas utilizadas na cirurgia:", min_value=1, step=1)
+
+        # Calcula o preço por pílula
+        preco_por_pilula = valor_cirurgia / num_pilulas
+
+        st.info(f"O preço por pílula é: R$ {preco_por_pilula:.2f}")
+
+        if st.button("Registrar Gastos"):
+            novo_dado = {"Remedio": "Gastos na Cirurgia", "Quantia": num_pilulas}
+            df = pd.concat([df, pd.DataFrame([novo_dado])], ignore_index=True)
+            save_data(df)
+            st.success("Gastos na cirurgia registrados com sucesso!")
 if __name__ == "__main__":
     main()
