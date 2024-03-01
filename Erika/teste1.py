@@ -148,7 +148,10 @@ def main():
 
         medicamentos_selecionados = st.multiselect("Selecione os medicamentos utilizados:", df["Remedio"].unique())
 
-        preco_total = 0
+        preco_total_cirurgia = 0
+
+        # Criar DataFrame para armazenar informações da tabela
+        tabela_quantidades = pd.DataFrame(columns=["Remedio", "Quantidade Total", "Quantidade de Subunidades", "Preco Total"])
 
         for remedio in medicamentos_selecionados:
             st.subheader(f"Informações para {remedio}")
@@ -172,18 +175,24 @@ def main():
                 quantidade_utilizada = quantidade_utilizada * num_subunidades_utilizadas
             else:
                 # Calcula o preço total com base na quantidade utilizada
-                preco_total += quantidade_utilizada * preco_por_unidade
-                preco_total += quantidade_subunidades_utilizadas * preco_por_subunidade
+                preco_total_cirurgia += quantidade_utilizada * preco_por_unidade
+                preco_total_cirurgia += quantidade_subunidades_utilizadas * preco_por_subunidade
 
-                # Exibe informações sobre o medicamento
-                st.write(f"Quantidade utilizada: {quantidade_utilizada}")
-                st.write(f"Quantidade de subunidades utilizadas: {quantidade_subunidades_utilizadas}")
-                st.write(f"Preço por unidade: R${preco_por_unidade:.2f}")
-                st.write(f"Preço por subunidade: R${preco_por_subunidade:.2f}")
-                st.write(f"Preço total para {quantidade_utilizada} unidades e {quantidade_subunidades_utilizadas} subunidades: R${preco_total:.2f}")
+                # Adiciona as informações à tabela_quantidades
+                tabela_quantidades = tabela_quantidades.append({
+                    "Remedio": remedio,
+                    "Quantidade Total": quantidade_utilizada,
+                    "Quantidade de Subunidades": quantidade_subunidades_utilizadas,
+                    "Preco Total": quantidade_utilizada * preco_por_unidade + quantidade_subunidades_utilizadas * preco_por_subunidade
+                }, ignore_index=True)
 
-        if st.button("Calcular Preço Total"):
-            st.success(f"O preço total estimado para a cirurgia ou procedimento é de R${preco_total:.2f}")
+        # Exibe a tabela_quantidades
+        st.subheader("Tabela de Quantidades")
+        st.write(tabela_quantidades)
+
+        # Exibe o preço total da cirurgia ou procedimento
+        st.subheader("Preço Total da Cirurgia ou Procedimento")
+        st.write(f"O preço total estimado para a cirurgia ou procedimento é de R${preco_total_cirurgia:.2f}")
 
     # ... (restante do código)
 if __name__ == "__main__":
