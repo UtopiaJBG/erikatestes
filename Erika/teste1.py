@@ -183,12 +183,12 @@ def main():
                 tabela_quantidades = pd.DataFrame()
 
 # Appending the new row
-                tabela_quantidades = tabela_quantidades.append({
-                        "Remedio": remedio,
-                        "Quantidade Total": quantidade_utilizada,
-                        "Quantidade de Subunidades": quantidade_subunidades_utilizadas,
-                        "Preco Total": quantidade_utilizada * preco_por_unidade + quantidade_subunidades_utilizadas * preco_por_subunidade
-                        }, ignore_index=True)
+                tabela_quantidades = pd.concat([tabela_quantidades, pd.DataFrame([{
+                    "Remedio": remedio,
+                    "Quantidade Total": quantidade_utilizada,
+                    "Quantidade de Subunidades": quantidade_subunidades_utilizadas,
+                    "Preco Total": quantidade_utilizada * preco_por_unidade + quantidade_subunidades_utilizadas * preco_por_subunidade
+                }])], ignore_index=True)
         # Exibe a tabela_quantidades
         st.subheader("Tabela de Quantidades")
         st.write(tabela_quantidades)
