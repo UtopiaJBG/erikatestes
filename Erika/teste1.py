@@ -1,12 +1,12 @@
 import streamlit as st
 import pandas as pd
-from datetime import datetime  # Import datetime module
+from datetime import datetime
 
 def load_data():
     try:
         df = pd.read_csv("planilha.csv")
     except FileNotFoundError:
-        df = pd.DataFrame(columns=["Remedio", "Data de Validade", "Quantia"])
+        df = pd.DataFrame(columns=["Remedio", "Data de Validade", "Quantia", "Preco por Unidade", "Preco por Subunidade"])
     df["Data de Validade"] = pd.to_datetime(df["Data de Validade"])
     df["Data de Validade"] = df["Data de Validade"].dt.strftime("%d/%m/%Y")    
     return df
@@ -15,39 +15,70 @@ def save_data(df):
     df.to_csv("planilha.csv", index=False)
 
 def get_current_date():
-    return datetime.now().date()  # Get current date
+    return datetime.now().date()
 
 def main():
     st.title("Gestão de Medicamentos")
 
     df = load_data()
 
-    menu = ["Adicionar Medicamento", "Editar Medicamento", "Excluir Medicamento", "Visualizar Medicamentos", "Gastos na Cirurgia"]
+    menu = ["Adicionar Medicamento", "Editar Medicamento", "Excluir Medicamento", "Visualizar Medicamentos", "Custos da Cirurgia ou Procedimento"]
     choice = st.sidebar.selectbox("Selecione uma opção:", menu)
-
     if choice == "Adicionar Medicamento":
         st.header("Adicionar Medicamento")
 
         remedio = st.text_input("Nome do Medicamento:")
         data_validade = st.date_input("Data de Validade:", value=get_current_date(), format="DD/MM/YYYY")
         quantia = st.number_input("Quantidade:", min_value=1, step=1)
-        preco_unidade = st.number_input("Preço por Unidade:")
-        preco_por_pilula = 0
-        pilulas_por_unidade = 1
+        preco_por_unidade = st.number_input("Preço por Unidade:", min_value=0.01, step=0.01)
+        num_subunidades = st.number_input("Número de Subunidades:", min_value=1, step=1)
 
-        if st.checkbox("Medicamento em pílulas"):
-            preco_por_pilula = st.number_input("Preço por Pílula:")
-            pilulas_por_unidade = st.number_input("Quantidade de Pílulas por Unidade:", min_value=1, step=1)
+        preco_por_subunidade = preco_por_unidade / num_subunidades if num_subunidades > 0 else 0
 
-        remedio_com_data = f"{remedio} - {data_validade.strftime('%d-%m-%Y')}"
+        # Adiciona automaticamente a data de validade ao nome do medicamento
+        remedio_com_data = f"{remedio} - {data_validade.strftime('%d-%m-%Y')}"  
         novo_dado = {"Remedio": remedio_com_data, "Data de Validade": data_validade, "Quantia": quantia,
-                     "Preco por Unidade": preco_unidade, "Preco por Pilula": preco_por_pilula,
-                     "Pilulas por Unidade": pilulas_por_unidade}
+                     "Preco por Unidade": preco_por_unidade, "Preco por Subunidade": preco_por_subunidade}
 
         if st.button("Adicionar"):
             df = pd.concat([df, pd.DataFrame([novo_dado])], ignore_index=True)
             save_data(df)
             st.success("Medicamento adicionado com sucesso!")
+
+    elif choice == "Visualizar Medicamentos":
+        st.header("Visualizar Medicamentos")
+
+        if not df.empty:
+            st.write()
+        else:
+            st.warning("Nenhum medicamento cadastrado.")
+
+        if not df.empty:
+            busca_usuario = st.text_input("Digite o nome do medicamento para buscar:")
+            medicamentos_filtrados = df[df["Remedio"].str.contains(busca_usuario, case=False, na=False)]
+
+            if medicamentos_filtrados.empty:
+                st.warning("Nenhum medicamento encontrado com o nome digitado.")
+            else:
+                # Garanta que a coluna "Data de Validade" seja do tipo datetime
+                medicamentos_filtrados["Data de Validade"] = (medicamentos_filtrados["Data de Validade"])
+
+                # Exibe medicamentos filtrados e formata as datas
+                st.write(medicamentos_filtrados.assign(**{"Data de Validade": medicamentos_filtrados["Data de Validade"]}))
+        else:
+            st.warning("Nenhum medicamento cadastrado.")
+
+        st.subheader("Filtrar Medicamentos por Data de Validade")
+        data_inicio = st.date_input("Data Inicial:")
+        data_fim = st.date_input("Data Final:")
+
+        df["Data de Validade"] = pd.to_datetime(df["Data de Validade"])
+
+        medicamentos_filtrados = df[(df["Data de Validade"] >= pd.Timestamp(data_inicio)) & (df["Data de Validade"] <= pd.Timestamp(data_fim))]
+
+        # Exibe medicamentos filtrados e formata as datas
+        st.write(medicamentos_filtrados.assign(**{"Data de Validade": medicamentos_filtrados["Data de Validade"]}))
+
     elif choice == "Editar Medicamento":
         st.header("Editar Medicamento")
 
@@ -87,39 +118,6 @@ def main():
                 st.success(f"{quantidade_utilizada} unidades do medicamento foram utilizadas com sucesso!")
         else:
             st.write()
-    elif choice == "Visualizar Medicamentos":
-        st.header("Visualizar Medicamentos")
-
-        if not df.empty:
-            st.write()
-        else:
-            st.warning("Nenhum medicamento cadastrado.")
-
-        if not df.empty:
-            busca_usuario = st.text_input("Digite o nome do medicamento para buscar:")
-            medicamentos_filtrados = df[df["Remedio"].str.contains(busca_usuario, case=False, na=False)]
-
-            if medicamentos_filtrados.empty:
-                st.warning("Nenhum medicamento encontrado com o nome digitado.")
-            else:
-                # Garanta que a coluna "Data de Validade" seja do tipo datetime
-                medicamentos_filtrados["Data de Validade"] = (medicamentos_filtrados["Data de Validade"])
-
-                # Exibe medicamentos filtrados e formata as datas
-                st.write(medicamentos_filtrados.assign(**{"Data de Validade": medicamentos_filtrados["Data de Validade"]}))
-        else:
-            st.warning("Nenhum medicamento cadastrado.")
-
-        st.subheader("Filtrar Medicamentos por Data de Validade")
-        data_inicio = st.date_input("Data Inicial:")
-        data_fim = st.date_input("Data Final:")
-
-        df["Data de Validade"] = pd.to_datetime(df["Data de Validade"])
-
-        medicamentos_filtrados = df[(df["Data de Validade"] >= pd.Timestamp(data_inicio)) & (df["Data de Validade"] <= pd.Timestamp(data_fim))]
-
-        # Exibe medicamentos filtrados e formata as datas
-        st.write(medicamentos_filtrados.assign(**{"Data de Validade": medicamentos_filtrados["Data de Validade"]}))
 
     elif choice == "Excluir Medicamento":
         st.header("Excluir Medicamento")
@@ -142,23 +140,51 @@ def main():
                 st.success(f"Medicamento '{remedio_selecionado}' excluído com sucesso!")
             else:
                 st.warning("Por favor, escolha um medicamento válido.")
-            
-    elif choice == "Gastos na Cirurgia":
-        st.header("Gastos na Cirurgia")
+    elif choice == "Custos da Cirurgia ou Procedimento":
+        st.header("Custos da Cirurgia ou Procedimento")
 
-        # Lógica para lidar com os gastos na cirurgia
-        valor_cirurgia = st.number_input("Valor total da cirurgia:")
-        num_pilulas = st.number_input("Quantidade de pílulas utilizadas na cirurgia:", min_value=1, step=1)
+        if st.checkbox("Mostrar Medicamentos"):
+            st.write(df)
 
-        # Calcula o preço por pílula
-        preco_por_pilula = valor_cirurgia / num_pilulas
+        medicamentos_selecionados = st.multiselect("Selecione os medicamentos utilizados:", df["Remedio"].unique())
 
-        st.info(f"O preço por pílula é: R$ {preco_por_pilula:.2f}")
+        preco_total = 0
 
-        if st.button("Registrar Gastos"):
-            novo_dado = {"Remedio": "Gastos na Cirurgia", "Quantia": num_pilulas}
-            df = pd.concat([df, pd.DataFrame([novo_dado])], ignore_index=True)
-            save_data(df)
-            st.success("Gastos na cirurgia registrados com sucesso!")
+        for remedio in medicamentos_selecionados:
+            st.subheader(f"Informações para {remedio}")
+            medicamento_info = df[df["Remedio"] == remedio].iloc[0]
+
+            preco_por_unidade = float(medicamento_info["Preco por Unidade"])
+            preco_por_subunidade = float(medicamento_info["Preco por Subunidade"]) if "Preco por Subunidade" in medicamento_info else 0
+            quantidade_disponivel = float(medicamento_info["Quantia"])
+
+            quantidade_utilizada = st.number_input(f"Quantidade Total Utilizada de {remedio}:", min_value=0, step=1)
+
+            # Adiciona um campo para informar quantas subunidades foram utilizadas
+            quantidade_subunidades_utilizadas = st.number_input(f"Quantidade Total de Subunidades Utilizadas de {remedio}:", min_value=0, step=1)
+
+            # Verifica se há unidades ou subunidades suficientes disponíveis
+            if quantidade_utilizada > quantidade_disponivel:
+                st.warning(f"Quantidade insuficiente de {remedio}. Disponível: {quantidade_disponivel} unidades/subunidades.")
+                
+                # Adiciona um campo para informar quantas subunidades foram utilizadas
+                num_subunidades_utilizadas = st.number_input(f"Quantas subunidades foram utilizadas para {quantidade_utilizada} unidades de {remedio}?", min_value=1, step=1)
+                quantidade_utilizada = quantidade_utilizada * num_subunidades_utilizadas
+            else:
+                # Calcula o preço total com base na quantidade utilizada
+                preco_total += quantidade_utilizada * preco_por_unidade
+                preco_total += quantidade_subunidades_utilizadas * preco_por_subunidade
+
+                # Exibe informações sobre o medicamento
+                st.write(f"Quantidade utilizada: {quantidade_utilizada}")
+                st.write(f"Quantidade de subunidades utilizadas: {quantidade_subunidades_utilizadas}")
+                st.write(f"Preço por unidade: R${preco_por_unidade:.2f}")
+                st.write(f"Preço por subunidade: R${preco_por_subunidade:.2f}")
+                st.write(f"Preço total para {quantidade_utilizada} unidades e {quantidade_subunidades_utilizadas} subunidades: R${preco_total:.2f}")
+
+        if st.button("Calcular Preço Total"):
+            st.success(f"O preço total estimado para a cirurgia ou procedimento é de R${preco_total:.2f}")
+
+    # ... (restante do código)
 if __name__ == "__main__":
     main()
