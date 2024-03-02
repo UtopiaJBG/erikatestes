@@ -12,8 +12,10 @@ repo_url = f"https://github.com/UtopiaJBG:{github_token}@github.com/UtopiaJBG/er
 subprocess.run(["git", "clone", repo_url])
 
 def load_data():
+    github_raw_csv_url = "https://github.com/UtopiaJBG/erikatestes/blob/bb11b915cc38f75f8525a321c316ae4a1a3f2d00/Erika/planilha.csv"
+    
     try:
-        df = pd.read_csv("planilha.csv")
+        df = pd.read_csv(github_raw_csv_url)
     except FileNotFoundError:
         df = pd.DataFrame(columns=["Remedio", "Data de Validade", "Quantia", "Preco por Unidade", "Preco por Subunidade"])
     
