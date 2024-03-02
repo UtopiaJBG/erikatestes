@@ -5,7 +5,7 @@ import subprocess
 import os
 
 github_token = os.getenv("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")
-repo_url = f"https://github.com/UtopiaJBG:{github_token}@github.com/UtopiaJBG/erikatestes.git"
+repo_url = f"https://github.com/UtopiaJBG:{github_token}@github.com/UtopiaJBG/erikatestes/tree/main/Erika"
 
 
 # Clone o repositório
