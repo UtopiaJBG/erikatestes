@@ -2,7 +2,10 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime
 import subprocess
-
+def execute_git_commands():
+    # Comandos Git desejados
+    subprocess.run(["git", "clone", "https://seu-usuario@github.com/seu-repositorio.git"])
+   
 def load_data():
     try:
         df = pd.read_csv("planilha.csv")
