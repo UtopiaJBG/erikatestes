@@ -7,8 +7,18 @@ def load_data():
         df = pd.read_csv("planilha.csv")
     except FileNotFoundError:
         df = pd.DataFrame(columns=["Remedio", "Data de Validade", "Quantia", "Preco por Unidade", "Preco por Subunidade"])
-    df["Data de Validade"] = pd.to_datetime(df["Data de Validade"])
-    df["Data de Validade"] = df["Data de Validade"].dt.strftime("%d/%m/%Y")    
+    
+    # Verifica se a coluna "Data de Validade" contém algum valor nulo
+    if df["Data de Validade"].isnull().any():
+        # Se sim, retorne o DataFrame sem alterações
+        return df
+    
+    # Converte a coluna "Data de Validade" para o formato datetime
+    df["Data de Validade"] = pd.to_datetime(df["Data de Validade"], errors='coerce')
+    
+    # Converte a coluna "Data de Validade" de volta para o formato desejado "%d/%m/%Y"
+    df["Data de Validade"] = df["Data de Validade"].dt.strftime("%d/%m/%Y")
+    
     return df
 
 def save_data(df):
