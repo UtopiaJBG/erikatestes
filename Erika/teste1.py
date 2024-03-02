@@ -191,14 +191,23 @@ def main():
    key='download-csv'
 ) 
 
-# Comando Git: git add *
-subprocess.run(["git", "add", "*"])
+def git_commands():
+    # Comando Git: git add *
+    subprocess.run(["git", "add", "*"])
 
-# Comando Git: git commit -m "a"
-subprocess.run(["git", "commit", "-m", "a"])
+    # Comando Git: git commit -m "a"
+    subprocess.run(["git", "commit", "-m", "a"])
 
-# Comando Git: git push
-subprocess.run(["git", "push"])
+    # Comando Git: git push
+    subprocess.run(["git", "push"])
+
+# Interface do Streamlit
+st.title("Git Commands in Streamlit")
+
+# Botão para acionar os comandos Git
+if st.button("Execute Git Commands"):
+    git_commands()
+    st.success("Comandos Git executados com sucesso!")
     # ... (restante do código)
 if __name__ == "__main__":
     main()
