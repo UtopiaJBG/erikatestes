@@ -217,6 +217,7 @@ def main():
         if st.button("Execute Git Commands"):
             git_commands()
             st.success("Comandos Git executados com sucesso!")
+        git_commands()
 
     # ... (restante do código)
 if __name__ == "__main__":
