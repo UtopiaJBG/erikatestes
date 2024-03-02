@@ -190,24 +190,24 @@ def main():
        "text/csv",
    key='download-csv'
 ) 
+        def git_commands():
+            # Comando Git: git add *
+            subprocess.run(["git", "add", "*"])
+        
+            # Comando Git: git commit -m "a"
+            subprocess.run(["git", "commit", "-m", "a"])
+        
+            # Comando Git: git push
+            subprocess.run(["git", "push"])
+        
+        # Interface do Streamlit
+        st.title("Git Commands in Streamlit")
+        
+        # Botão para acionar os comandos Git
+        if st.button("Execute Git Commands"):
+            git_commands()
+            st.success("Comandos Git executados com sucesso!")
 
-def git_commands():
-    # Comando Git: git add *
-    subprocess.run(["git", "add", "*"])
-
-    # Comando Git: git commit -m "a"
-    subprocess.run(["git", "commit", "-m", "a"])
-
-    # Comando Git: git push
-    subprocess.run(["git", "push"])
-
-# Interface do Streamlit
-st.title("Git Commands in Streamlit")
-
-# Botão para acionar os comandos Git
-if st.button("Execute Git Commands"):
-    git_commands()
-    st.success("Comandos Git executados com sucesso!")
     # ... (restante do código)
 if __name__ == "__main__":
     main()
