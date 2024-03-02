@@ -1,21 +1,10 @@
 import streamlit as st
 import pandas as pd
 from datetime import datetime
-import subprocess
-import os
-
-github_token = os.getenv("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")
-repo_url = f"https://github.com/UtopiaJBG:{github_token}@github.com/UtopiaJBG/erikatestes/tree/main/Erika"
-
-
-# Clone o repositório
-subprocess.run(["git", "clone", repo_url])
 
 def load_data():
-    github_raw_csv_url = "https://github.com/UtopiaJBG/erikatestes/blob/bb11b915cc38f75f8525a321c316ae4a1a3f2d00/Erika/planilha.csv"
-    
     try:
-        df = pd.read_csv(github_raw_csv_url)
+        df = pd.read_csv("planilha.csv")
     except FileNotFoundError:
         df = pd.DataFrame(columns=["Remedio", "Data de Validade", "Quantia", "Preco por Unidade", "Preco por Subunidade"])
     
@@ -200,27 +189,6 @@ def main():
        "text/csv",
    key='download-csv'
 ) 
-        def git_commands():
-            # Comando Git: git add *
-            subprocess.run(["git", "clone", "https://github.com/UtopiaJBG/erikatestes.git"])
-
-            subprocess.run(["git", "add", "*"])
-        
-            # Comando Git: git commit -m "a"
-            subprocess.run(["git", "commit", "-m", "a"])
-        
-            # Comando Git: git push
-            subprocess.run(["git", "push"])
-        
-        # Interface do Streamlit
-        st.title("Git Commands in Streamlit")
-        
-        # Botão para acionar os comandos Git
-        if st.button("Execute Git Commands"):
-            git_commands()
-            st.success("Comandos Git executados com sucesso!")
-        git_commands()
-
     # ... (restante do código)
 if __name__ == "__main__":
     main()
