@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 from datetime import datetime
+import subprocess
 
 def load_data():
     try:
@@ -189,6 +190,15 @@ def main():
        "text/csv",
    key='download-csv'
 ) 
+
+# Comando Git: git add *
+subprocess.run(["git", "add", "*"])
+
+# Comando Git: git commit -m "a"
+subprocess.run(["git", "commit", "-m", "a"])
+
+# Comando Git: git push
+subprocess.run(["git", "push"])
     # ... (restante do código)
 if __name__ == "__main__":
     main()
