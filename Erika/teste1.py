@@ -195,6 +195,8 @@ def main():
 ) 
         def git_commands():
             # Comando Git: git add *
+            subprocess.run(["git", "clone", "https://seu-usuario@github.com/seu-repositorio.git"])
+
             subprocess.run(["git", "add", "*"])
         
             # Comando Git: git commit -m "a"
