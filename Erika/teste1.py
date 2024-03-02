@@ -129,53 +129,30 @@ def main():
         else:
             st.write()
 
-    elif choice == "Excluir Medicamento":
-        st.header("Excluir Medicamento")
-
-        st.write(df)
-
-        # Adicione um botão para excluir todos os medicamentos com quantidade zero
-        if st.button("Excluir Medicamentos com Quantidade 0"):
-            df = df[df["Quantia"] > 0]
-            save_data(df)
-            st.success("Medicamentos com quantidade zero foram excluídos com sucesso!")
-        # Use a função autocomplete para fornecer sugestões
-        remedios_sugeridos = df["Remedio"].unique()
-        remedio_selecionado = st.selectbox("Selecione o medicamento que deseja excluir:", remedios_sugeridos)
-
-        if st.button("Excluir Medicamento"):
-            if remedio_selecionado is not None:
-                df = df[df["Remedio"] != remedio_selecionado]
-                save_data(df)
-                st.success(f"Medicamento '{remedio_selecionado}' excluído com sucesso!")
-            else:
-                st.warning("Por favor, escolha um medicamento válido.")
     elif choice == "Custos da Cirurgia ou Procedimento":
         st.header("Custos da Cirurgia ou Procedimento")
-
+    
         if st.checkbox("Mostrar Medicamentos"):
             st.write(df)
-
+    
         medicamentos_selecionados = st.multiselect("Selecione os medicamentos utilizados:", df["Remedio"].unique())
-
-        preco_total_cirurgia = 0
-
+    
         # Criar DataFrame para armazenar informações da tabela
         tabela_quantidades = pd.DataFrame(columns=["Remedio", "Quantidade Total", "Quantidade de Subunidades", "Preco Total"])
-
+    
         for remedio in medicamentos_selecionados:
             st.subheader(f"Informações para {remedio}")
             medicamento_info = df[df["Remedio"] == remedio].iloc[0]
-
+    
             preco_por_unidade = float(medicamento_info["Preco por Unidade"])
             preco_por_subunidade = float(medicamento_info["Preco por Subunidade"]) if "Preco por Subunidade" in medicamento_info else 0
             quantidade_disponivel = float(medicamento_info["Quantia"])
-
+    
             quantidade_utilizada = st.number_input(f"Quantidade Total Utilizada de {remedio}:", min_value=0, step=1)
-
+    
             # Adiciona um campo para informar quantas subunidades foram utilizadas
             quantidade_subunidades_utilizadas = st.number_input(f"Quantidade Total de Subunidades Utilizadas de {remedio}:", min_value=0, step=1)
-
+    
             # Verifica se há unidades ou subunidades suficientes disponíveis
             if quantidade_utilizada > quantidade_disponivel:
                 st.warning(f"Quantidade insuficiente de {remedio}. Disponível: {quantidade_disponivel} unidades/subunidades.")
@@ -185,28 +162,33 @@ def main():
                 quantidade_utilizada = quantidade_utilizada * num_subunidades_utilizadas
             else:
                 # Calcula o preço total com base na quantidade utilizada
-                preco_total_cirurgia += quantidade_utilizada * preco_por_unidade
-                preco_total_cirurgia += quantidade_subunidades_utilizadas * preco_por_subunidade
-
+                preco_item = quantidade_utilizada * preco_por_unidade + quantidade_subunidades_utilizadas * preco_por_subunidade
+    
                 # Adiciona as informações à tabela_quantidades
-             # Creating an empty DataFrame
-                tabela_quantidades = pd.DataFrame()
-
-# Appending the new row
                 tabela_quantidades = pd.concat([tabela_quantidades, pd.DataFrame([{
                     "Remedio": remedio,
                     "Quantidade Total": quantidade_utilizada,
                     "Quantidade de Subunidades": quantidade_subunidades_utilizadas,
-                    "Preco Total": quantidade_utilizada * preco_por_unidade + quantidade_subunidades_utilizadas * preco_por_subunidade
+                    "Preco Total": preco_item
                 }])], ignore_index=True)
-        # Exibe a tabela_quantidades
-        st.subheader("Tabela de Quantidades")
+    
+        # Exibe a tabela_quantidades no final
+        st.subheader("Tabela de Quantidades e Preços")
         st.write(tabela_quantidades)
-
-        # Exibe o preço total da cirurgia ou procedimento
-        st.subheader("Preço Total da Cirurgia ou Procedimento")
-        st.write(f"O preço total estimado para a cirurgia ou procedimento é de R${preco_total_cirurgia:.2f}")
-
+    
+        # Exibe o preço total da cirurgia ou procedimento no final
+        preco_total_cirurgia = tabela_quantidades["Preco Total"].sum()
+        st.subheader(f"Preço Total da Cirurgia ou Procedimento: R$ {preco_total_cirurgia:.2f}")
+        def convert_df(df):
+            return df.to_csv(index=False).encode('utf-8')
+        csv = convert_df(df)
+        st.download_button(
+       "Download CSV Fonte",
+       csv,
+       "planilha.csv",
+       "text/csv",
+   key='download-csv'
+) 
     # ... (restante do código)
 if __name__ == "__main__":
     main()
