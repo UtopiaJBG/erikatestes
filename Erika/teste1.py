@@ -14,7 +14,7 @@ def load_data():
         return df
     
     # Converte a coluna "Data de Validade" para o formato datetime
-    df["Data de Validade"] = pd.to_datetime(df["Data de Validade"], errors='coerce')
+    df["Data de Validade"] = pd.gmtime(-3)(df["Data de Validade"], errors='coerce')
     
     # Converte a coluna "Data de Validade" de volta para o formato desejado "%d/%m/%Y"
     df["Data de Validade"] = df["Data de Validade"].dt.strftime("%d/%m/%Y")
@@ -63,12 +63,12 @@ def main():
         data_fim = st.date_input("Data Final:")
     
         # Certifique-se de que a coluna "Data de Validade" esteja no formato datetime.date
-        df["Data de Validade"] = pd.to_datetime(df["Data de Validade"], errors='coerce').dt.date
+        df["Data de Validade"] = pd.to_gmtime(-3)(df["Data de Validade"], errors='coerce').dt.date
     
         # Filtre o DataFrame com base nas datas
         medicamentos_filtrados = df[
-            (df["Data de Validade"] >= pd.to_datetime(data_inicio)) & 
-            (df["Data de Validade"] <= pd.to_datetime(data_fim))
+            (df["Data de Validade"] >= pd.to_gmtime(-3)(data_inicio)) & 
+            (df["Data de Validade"] <= pd.to_gmtime(-3)(data_fim))
         ]
     
         # Exibe medicamentos filtrados e formata as datas
@@ -99,10 +99,7 @@ def main():
                 # Exibe medicamentos filtrados e formata as datas
                 st.write(medicamentos_filtrados.assign(**{"Data de Validade": medicamentos_filtrados["Data de Validade"]}))
         else:
-            st.warning("Nenhum medicamento cadastrado.")
-
-        st.subheader("Filtrar Medicamentos por Data de Validade")
-        
+            st.warning("Nenhum medicamento cadastrado.")        
     elif choice == "Editar Medicamento":
         st.header("Editar Medicamento")
 
