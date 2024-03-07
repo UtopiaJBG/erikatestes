@@ -54,6 +54,29 @@ def main():
             df = pd.concat([df, pd.DataFrame([novo_dado])], ignore_index=True)
             save_data(df)
             st.success("Medicamento adicionado com sucesso!")
+    
+    elif choice == "Filtrar Medicamentos por Data de Validade":
+        st.header("Filtrar Medicamentos por Data de Validade")
+    
+        st.subheader("Selecione o Intervalo de Datas:")
+        data_inicio = st.date_input("Data Inicial:")
+        data_fim = st.date_input("Data Final:")
+    
+        # Certifique-se de que a coluna "Data de Validade" esteja no formato datetime.date
+        df["Data de Validade"] = pd.to_datetime(df["Data de Validade"], errors='coerce').dt.date
+    
+        # Filtre o DataFrame com base nas datas
+        medicamentos_filtrados = df[
+            (df["Data de Validade"] >= pd.to_datetime(data_inicio)) & 
+            (df["Data de Validade"] <= pd.to_datetime(data_fim))
+        ]
+    
+        # Exibe medicamentos filtrados e formata as datas
+        if not medicamentos_filtrados.empty:
+            st.write(medicamentos_filtrados.assign(**{"Data de Validade": medicamentos_filtrados["Data de Validade"]}))
+        else:
+            st.warning("Nenhum medicamento encontrado no intervalo de datas selecionado.")
+
 
     elif choice == "Visualizar Medicamentos":
         st.header("Visualizar Medicamentos")
@@ -80,7 +103,6 @@ def main():
 
         st.subheader("Filtrar Medicamentos por Data de Validade")
         
-
     elif choice == "Editar Medicamento":
         st.header("Editar Medicamento")
 
