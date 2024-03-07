@@ -32,7 +32,7 @@ def main():
 
     df = load_data()
 
-    menu = ["Adicionar Medicamento", "Editar Medicamento", "Excluir Medicamento", "Visualizar Medicamentos", "Custos da Cirurgia ou Procedimento"]
+    menu = ["Adicionar Medicamento", "Editar Medicamento", "Excluir Medicamento", "Visualizar Medicamentos", "Custos da Cirurgia ou Procedimento","Filtrar Medicamentos por Data de Validade"]
     choice = st.sidebar.selectbox("Selecione uma opção:", menu)
     if choice == "Adicionar Medicamento":
         st.header("Adicionar Medicamento")
