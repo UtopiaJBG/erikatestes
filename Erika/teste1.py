@@ -5,7 +5,7 @@ from dateutil import parser
 
 def load_data():
     try:
-        df = pd.read_csv("planilha.CSV")
+        df = pd.read_csv("planilha.CSV", sep = ';'))
     except FileNotFoundError:
         df = pd.DataFrame(columns=["Remedio", "Data de Validade", "Quantia", "Preco por Unidade", "Preco por Subunidade"])
     
