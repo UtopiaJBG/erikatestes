@@ -85,8 +85,7 @@ def main():
         data_inicio = st.date_input("Data Inicial:")
         data_fim = st.date_input("Data Final:")
         
-        medicamentos_filtrados = df[
-            (df["Data de Validade"] >= data_inicio) & (df["Data de Validade"] <= data_fim)]
+        medicamentos_filtrados = df[(df["Data de Validade"] >= data_inicio) & (df["Data de Validade"] <= data_fim)]
         # Exibe medicamentos filtrados e formata as datas
         st.write(medicamentos_filtrados.assign(**{"Data de Validade": medicamentos_filtrados["Data de Validade"]}))
 
