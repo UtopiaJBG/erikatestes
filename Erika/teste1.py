@@ -21,18 +21,6 @@ def load_data():
     df["Data de Validade"] = df["Data de Validade"].dt.strftime("%d/%m/%Y")
     
     return df
-def import_spreadsheet():
-    uploaded_file = st.file_uploader("Escolha o arquivo CSV para importar", type=["csv"])
-
-    if uploaded_file is not None:
-        try:
-            df = pd.read_csv(uploaded_file)
-            st.success("Planilha importada com sucesso!")
-        except Exception as e:
-            st.error(f"Erro ao importar a planilha: {e}")
-            df = pd.DataFrame(columns=["Remedio", "Data de Validade", "Quantia", "Preco por Unidade", "Preco por Subunidade"])
-
-        return df
 
 def save_data(df):
     df.to_csv("planilha.csv", index=False)
@@ -43,17 +31,8 @@ def get_current_date():
 def main():
     st.title("Gestão de Medicamentos")
 
+    df = load_data()
 
-    # Add a button to import a spreadsheet
-    if st.button("Importar Planilha"):
-        df = import_spreadsheet()
-        # Save the imported data to the CSV file
-        save_data(df)
-    else:
-        # If the button is not clicked, load the data from the CSV file
-        df = pd.read_csv("planilha.csv", error_bad_lines=False)
-        
-        
     menu = ["Adicionar Medicamento", "Editar Medicamento", "Excluir Medicamento", "Visualizar Medicamentos", "Custos da Cirurgia ou Procedimento","Filtrar Medicamentos por Data de Validade"]
     choice = st.sidebar.selectbox("Selecione uma opção:", menu)
     if choice == "Adicionar Medicamento":
@@ -238,4 +217,3 @@ def main():
     # ... (restante do código)
 if __name__ == "__main__":
     main()
-
