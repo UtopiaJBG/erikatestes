@@ -55,6 +55,7 @@ def main():
             df = pd.concat([df, pd.DataFrame([novo_dado])], ignore_index=True)
             save_data(df)
             st.success("Medicamento adicionado com sucesso!")
+
     elif choice == "Filtrar Medicamentos por Data de Validade":
         st.subheader("Filtrar Medicamentos por Data de Validade")
             
@@ -69,7 +70,6 @@ def main():
     
             # Exibe medicamentos filtrados e formata as datas
         st.write(medicamentos_filtrados.assign(**{"Data de Validade": medicamentos_filtrados["Data de Validade"]}))
-
     elif choice == "Visualizar Medicamentos":
         st.header("Visualizar Medicamentos")
 
@@ -217,3 +217,4 @@ def main():
     # ... (restante do código)
 if __name__ == "__main__":
     main()
+
