@@ -88,8 +88,6 @@ def main():
                 st.write(medicamentos_filtrados.assign(**{"Data de Validade": medicamentos_filtrados["Data de Validade"]}))
         else:
             st.warning("Nenhum medicamento cadastrado.")
-
-        st.subheader("Filtrar Medicamentos por Data de Validade")
         
     elif choice == "Editar Medicamento":
         st.header("Editar Medicamento")
