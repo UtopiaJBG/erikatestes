@@ -85,9 +85,7 @@ def main():
         df["Data de Validade"] = pd.to_datetime(df["Data de Validade"], errors='coerce')
 
         medicamentos_filtrados = df[
-            (df["Data de Validade"] >= data_inicio) & 
-            (df["Data de Validade"] <= data_fim)
-        ]
+            (df["Data de Validade"] >= data_inicio) & (df["Data de Validade"] <= data_fim)]
         # Exibe medicamentos filtrados e formata as datas
         st.write(medicamentos_filtrados.assign(**{"Data de Validade": medicamentos_filtrados["Data de Validade"]}))
 
