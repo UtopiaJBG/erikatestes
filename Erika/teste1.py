@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from datetime import datetime
+import arrow 
 
 def load_data():
     try:
@@ -14,7 +14,7 @@ def load_data():
         return df
     
     # Converte a coluna "Data de Validade" para o formato datetime
-    df["Data de Validade"] = pd.gmtime(-3)(df["Data de Validade"], errors='coerce')
+    df["Data de Validade"] = df["Data de Validade"].apply(arrow.get, args=('DD/MM/YYYY',))
     
     # Converte a coluna "Data de Validade" de volta para o formato desejado "%d/%m/%Y"
     df["Data de Validade"] = df["Data de Validade"].dt.strftime("%d/%m/%Y")
@@ -25,7 +25,7 @@ def save_data(df):
     df.to_csv("planilha.csv", index=False)
 
 def get_current_date():
-    return datetime.now().date()
+    return arrow.now().date()
 
 def main():
     st.title("Gestão de Medicamentos")
@@ -55,6 +55,31 @@ def main():
             save_data(df)
             st.success("Medicamento adicionado com sucesso!")
     
+    elif choice == "Filtrar Medicamentos por Data de Validade":
+        st.header("Filtrar Medicamentos por Data de Validade")
+    
+        st.subheader("Selecione o Intervalo de Datas:")
+        data_inicio = st.date_input("Data Inicial:")
+        data_fim = st.date_input("Data Final:")
+    
+        # Certifique-se de que a coluna "Data de Validade" esteja no formato arrow
+        df["Data de Validade"] = df["Data de Validade"].apply(arrow.get, args=('DD/MM/YYYY',))
+    
+        # Certifique-se de que as datas de início e fim também estão no formato arrow
+        data_inicio = arrow.get(data_inicio)
+        data_fim = arrow.get(data_fim)
+    
+        # Filtre o DataFrame com base nas datas
+        medicamentos_filtrados = df[
+            (df["Data de Validade"] >= data_inicio) & 
+            (df["Data de Validade"] <= data_fim)
+        ]
+    
+        # Exibe medicamentos filtrados e formata as datas
+        if not medicamentos_filtrados.empty:
+            st.write(medicamentos_filtrados.assign(**{"Data de Validade": medicamentos_filtrados["Data de Validade"]}))
+        else:
+            st.warning("Nenhum medicamento encontrado no intervalo de datas selecionado.")
 
     elif choice == "Visualizar Medicamentos":
         st.header("Visualizar Medicamentos")
