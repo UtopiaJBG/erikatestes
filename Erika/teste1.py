@@ -54,7 +54,20 @@ def main():
             df = pd.concat([df, pd.DataFrame([novo_dado])], ignore_index=True)
             save_data(df)
             st.success("Medicamento adicionado com sucesso!")
+    elif choice == "Filtrar Medicamentos por Data de Validade":
+        st.subheader("Filtrar Medicamentos por Data de Validade")
+            
+        data_inicio = st.date_input("Data Inicial:")
+        data_fim = st.date_input("Data Final:")
     
+         # Converte as datas para o formato esperado pelo pandas
+        data_inicio = parser.parse(str(data_inicio)).strftime("%Y-%m-%d")
+        data_fim = parser.parse(str(data_fim)).strftime("%Y-%m-%d")
+    
+        medicamentos_filtrados = df[(df["Data de Validade"] >= data_inicio) & (df["Data de Validade"] <= data_fim)]
+    
+            # Exibe medicamentos filtrados e formata as datas
+        st.write(medicamentos_filtrados.assign(**{"Data de Validade": medicamentos_filtrados["Data de Validade"]}))
     elif choice == "Filtrar Medicamentos por Data de Validade":
         st.header("Filtrar Medicamentos por Data de Validade")
     
