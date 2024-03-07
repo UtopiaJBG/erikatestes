@@ -33,6 +33,11 @@ def main():
 
     uploaded_file = st.file_uploader("Coloque o arquivo aqui")
 
+    if uploaded_file:
+        # Salve o DataFrame em session_state
+        st.session_state.df = pd.read_csv(uploaded_file, encoding='latin1')
+
+
     df = load_data(uploaded_file)
 
     menu = ["Adicionar Medicamento", "Editar Medicamento", "Excluir Medicamento", "Visualizar Medicamentos", "Custos da Cirurgia ou Procedimento","Filtrar Medicamentos por Data de Validade"]
