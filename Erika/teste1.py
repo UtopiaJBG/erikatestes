@@ -15,7 +15,7 @@ def load_data():
         return df
     
     # Converte a coluna "Data de Validade" para o formato datetime
-    df["Data de Validade"] = pd.datetime(df["Data de Validade"], errors='coerce')
+    df["Data de Validade"] = pd.to_datetime(df["Data de Validade"], errors='coerce')
     
     # Converte a coluna "Data de Validade" de volta para o formato desejado "%d/%m/%Y"
     df["Data de Validade"] = df["Data de Validade"].dt.strftime("%d/%m/%Y")
