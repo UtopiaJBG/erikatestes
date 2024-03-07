@@ -3,23 +3,23 @@ import pandas as pd
 from datetime import datetime
 from dateutil import parser
 
-def load_data():
+def load_data(uploaded_file):
     try:
-        df = pd.read_csv("planilha.csv")
+        df = pd.read_csv(uploaded_file, encoding='latin1')
     except FileNotFoundError:
         df = pd.DataFrame(columns=["Remedio", "Data de Validade", "Quantia", "Preco por Unidade", "Preco por Subunidade"])
-    
+
     # Verifica se a coluna "Data de Validade" contém algum valor nulo
     if df["Data de Validade"].isnull().any():
         # Se sim, retorne o DataFrame sem alterações
         return df
-    
+
     # Converte a coluna "Data de Validade" para o formato datetime
     df["Data de Validade"] = pd.to_datetime(df["Data de Validade"], errors='coerce')
-    
+
     # Converte a coluna "Data de Validade" de volta para o formato desejado "%d/%m/%Y"
     df["Data de Validade"] = df["Data de Validade"].dt.strftime("%d/%m/%Y")
-    
+
     return df
 
 def save_data(df):
@@ -31,10 +31,13 @@ def get_current_date():
 def main():
     st.title("Gestão de Medicamentos")
 
-    df = load_data()
+    uploaded_file = st.file_uploader("Coloque o arquivo aqui")
+
+    df = load_data(uploaded_file)
 
     menu = ["Adicionar Medicamento", "Editar Medicamento", "Excluir Medicamento", "Visualizar Medicamentos", "Custos da Cirurgia ou Procedimento","Filtrar Medicamentos por Data de Validade"]
     choice = st.sidebar.selectbox("Selecione uma opção:", menu)
+
     if choice == "Adicionar Medicamento":
         st.header("Adicionar Medicamento")
 
