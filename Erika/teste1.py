@@ -81,7 +81,6 @@ def main():
         st.subheader("Filtrar Medicamentos por Data de Validade")
         data_inicio = st.date_input("Data Inicial:")
         data_fim = st.date_input("Data Final:")
-
         medicamentos_filtrados = df[(df["Data de Validade"] >= pd.Timestamp(data_inicio)) & (df["Data de Validade"] <= pd.Timestamp(data_fim))]
 
         # Exibe medicamentos filtrados e formata as datas
