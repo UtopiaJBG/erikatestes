@@ -5,7 +5,7 @@ from dateutil import parser
 
 def load_data():
     try:
-        df = pd.read_csv("planilha.csv", encoding = 'latin1')
+        df = pd.read_csv("planilha.csv", parse_dates=["Data de Validade"], dayfirst=True)
     except FileNotFoundError:
         df = pd.DataFrame(columns=["Remedio", "Data de Validade", "Quantia", "Preco por Unidade", "Preco por Subunidade"])
     
@@ -15,10 +15,7 @@ def load_data():
         return df
     
     # Converte a coluna "Data de Validade" para o formato datetime
-    df["Data de Validade"] = pd.datetime(df["Data de Validade"], errors='coerce')
-    
-    # Converte a coluna "Data de Validade" de volta para o formato desejado "%d/%m/%Y"
-    df["Data de Validade"] = df["Data de Validade"].dt.strftime("%d/%m/%Y")
+    df["Data de Validade"] = pd.to_datetime(df["Data de Validade"], format="%d/%m/%Y", errors='coerce')
     
     return df
 
@@ -57,19 +54,18 @@ def main():
             st.success("Medicamento adicionado com sucesso!")
     elif choice == "Filtrar Medicamentos por Data de Validade":
         st.subheader("Filtrar Medicamentos por Data de Validade")
-            
+        
         data_inicio = st.date_input("Data Inicial:")
         data_fim = st.date_input("Data Final:")
-    
-         # Converte as datas para o formato esperado pelo pandas
+
+        # Converte as datas para o formato esperado pelo pandas
         data_inicio = parser.parse(str(data_inicio)).strftime("%Y-%m-%d")
         data_fim = parser.parse(str(data_fim)).strftime("%Y-%m-%d")
-    
-        medicamentos_filtrados = df[(df["Data de Validade"] >= data_inicio) & (df["Data de Validade"] <= data_fim)]
-    
-            # Exibe medicamentos filtrados e formata as datas
-        st.write(medicamentos_filtrados.assign(**{"Data de Validade": medicamentos_filtrados["Data de Validade"]}))
 
+        medicamentos_filtrados = df[(df["Data de Validade"] >= data_inicio) & (df["Data de Validade"] <= data_fim)]
+
+        # Exibe medicamentos filtrados e formata as datas
+        st.write(medicamentos_filtrados.assign(**{"Data de Validade": medicamentos_filtrados["Data de Validade"]}))
     elif choice == "Visualizar Medicamentos":
         st.header("Visualizar Medicamentos")
 
@@ -91,7 +87,10 @@ def main():
                 # Exibe medicamentos filtrados e formata as datas
                 st.write(medicamentos_filtrados.assign(**{"Data de Validade": medicamentos_filtrados["Data de Validade"]}))
         else:
-            st.warning("Nenhum medicamento cadastrado.")        
+            st.warning("Nenhum medicamento cadastrado.")
+
+        st.subheader("Filtrar Medicamentos por Data de Validade")
+        
     elif choice == "Editar Medicamento":
         st.header("Editar Medicamento")
 
