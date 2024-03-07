@@ -80,14 +80,6 @@ def main():
 
         st.subheader("Filtrar Medicamentos por Data de Validade")
         
-        df["Data de Validade"] = pd.to_datetime(df["Data de Validade"], errors='coerce')
-
-        data_inicio = st.date_input("Data Inicial:")
-        data_fim = st.date_input("Data Final:")
-        
-        medicamentos_filtrados = df[(df["Data de Validade"] >= data_inicio) & (df["Data de Validade"] <= data_fim)]
-        # Exibe medicamentos filtrados e formata as datas
-        st.write(medicamentos_filtrados.assign(**{"Data de Validade": medicamentos_filtrados["Data de Validade"]}))
 
     elif choice == "Editar Medicamento":
         st.header("Editar Medicamento")
