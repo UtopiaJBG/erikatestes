@@ -102,9 +102,7 @@ def main():
         busca_medicamento_editar = st.text_input("Digite o nome do medicamento que deseja editar:")
         medicamentos_filtrados_editar = df[df["Remedio"].astype(str).str.contains(busca_medicamento_editar, case=False, na=False)]
         st.header("Editar Medicamento")
-
-        if st.checkbox("Mostrar Medicamentos"):
-            columns_to_display = [
+        columns_to_display = [
     "Remedio",
     "Data de Validade",
     "Quantia Inicial",
@@ -118,9 +116,10 @@ def main():
       
         
         if not medicamentos_filtrados_editar.empty:
-            st.write(medicamentos_filtrados_editar)
+            st.write()
         else:
             st.warning("Nenhum medicamento encontrado com o nome digitado.")
+
 
         remedio_para_editar = st.selectbox("Escolha o medicamento para editar:", medicamentos_filtrados_editar["Remedio"].unique(), key="editar_medicamento")
         indice_para_editar = df[df["Remedio"] == remedio_para_editar].index
