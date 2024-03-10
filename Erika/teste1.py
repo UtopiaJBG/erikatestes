@@ -111,7 +111,7 @@ def main():
     "Subunidades Totais",
     "Subunidades Restantes",
     "Quantia Atual"]
-        st.write(medicamentos_filtrados_editar[columns_to_display])
+        st.dataframe(medicamentos_filtrados_editar[columns_to_display], height=600)
 
       
         
@@ -120,14 +120,13 @@ def main():
         else:
             st.warning("Nenhum medicamento encontrado com o nome digitado.")
 
-
         remedio_para_editar = st.selectbox("Escolha o medicamento para editar:", medicamentos_filtrados_editar["Remedio"].unique(), key="editar_medicamento")
         indice_para_editar = df[df["Remedio"] == remedio_para_editar].index
 
         if st.button("Mostrar Detalhes do Medicamento"):
             if not indice_para_editar.empty:
                 detalhes = df.loc[indice_para_editar]
-                st.write(detalhes)
+                st.dataframe(detalhes[columns_to_display], height=100)
             else:
                 st.warning("Medicamento não encontrado. Certifique-se de escolher um medicamento válido.")
 
