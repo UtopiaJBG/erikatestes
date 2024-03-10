@@ -271,7 +271,7 @@ def main():
             return df.to_csv(index=False, encoding='utf-8-sig').encode('utf-8')
         csv = convert_df(tabela_quantidades)
         st.download_button(
-    "Download CSV Fonte",
+    "Download Tabela de Informações",
     csv,
     "tabela_quantidades.csv",
     "text/csv; charset=utf-8-sig",
