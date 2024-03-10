@@ -205,10 +205,15 @@ def main():
 
     elif choice == "Custos da Cirurgia ou Procedimento":
         st.header("Custos da Cirurgia ou Procedimento")
+  # Get user input for patient's name, type of procedure, and date of the procedure
+        nome_paciente = st.text_input("Nome do Paciente:")
+        tipo_procedimento = st.text_input("Tipo de Procedimento:")
+        data_procedimento = st.date_input("Data do Procedimento:", value=get_current_date(), format="DD/MM/YYYY")
+        
     
         if st.checkbox("Mostrar Medicamentos"):
             st.write(df)
-    
+
         medicamentos_selecionados = st.multiselect("Selecione os medicamentos utilizados:", df["Remedio"].unique())
     
         # Criar DataFrame para armazenar informações da tabela
@@ -250,20 +255,28 @@ def main():
         st.subheader("Tabela de Quantidades e Preços")
         st.write(tabela_quantidades)
     
+        # Adiciona as informações do paciente à tabela_quantidades
+        tabela_quantidades["Nome do Paciente"] = nome_paciente
+        tabela_quantidades["Tipo de Procedimento"] = tipo_procedimento
+        tabela_quantidades["Data do Procedimento"] = data_procedimento.strftime('%d/%m/%Y')
+    
         # Exibe o preço total da cirurgia ou procedimento no final
         preco_total_cirurgia = tabela_quantidades["Preco Total"].sum()
         st.subheader(f"Preço Total da Cirurgia ou Procedimento: R$ {preco_total_cirurgia:.2f}")
-        
+        st.subheader("Informações do Paciente e Procedimento")
+        st.write(f"Nome do Paciente: {nome_paciente}")
+        st.write(f"Tipo de Procedimento: {tipo_procedimento}")
+        st.write(f"Data do Procedimento: {data_procedimento.strftime('%d/%m/%Y')}")
         def convert_df(df):
-            return df.to_csv(index=False).encode('utf-8')
-        csv = convert_df(df)
+            return df.to_csv(index=False, encoding='utf-8-sig').encode('utf-8')
+        csv = convert_df(tabela_quantidades)
         st.download_button(
-       "Download CSV Fonte",
-       csv,
-       "planilha.csv",
-       "text/csv",
-   key='download-csv'
-) 
+    "Download CSV Fonte",
+    csv,
+    "tabela_quantidades.csv",
+    "text/csv; charset=utf-8-sig",
+    key='download-csv'
+)
     # ... (restante do código)
 if __name__ == "__main__":
     main()
