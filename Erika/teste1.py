@@ -3,6 +3,8 @@ import pandas as pd
 from datetime import datetime
 from dateutil import parser
 
+original_quantia_atual = 0
+
 def load_data():
     try:
         df = pd.read_csv("planilha.csv", parse_dates=["Data de Validade"], dayfirst=True)
@@ -19,6 +21,10 @@ def load_data():
     
     return df
 
+def calcular_quantias_restantes(original_quantia_atual, num_subunidades, subunidade_utilizada): 
+    quantia_restante = ((original_quantia_atual * num_subunidades) - subunidade_utilizada) / num_subunidades      
+    return quantia_restante
+
 def save_data(df):
     df.to_csv("planilha.csv", index=False)
 
@@ -26,6 +32,7 @@ def get_current_date():
     return datetime.now().date()
 
 def main():
+    global original_quantia_atual  # Declare the variable as global
     st.title("Gestão de Medicamentos")
 
     df = load_data()
@@ -34,19 +41,22 @@ def main():
     choice = st.sidebar.selectbox("Selecione uma opção:", menu)
     if choice == "Adicionar Medicamento":
         st.header("Adicionar Medicamento")
-
+        
         remedio = st.text_input("Nome do Medicamento:")
         data_validade = st.date_input("Data de Validade:", value=get_current_date(), format="DD/MM/YYYY")
         quantia = st.number_input("Quantidade:", min_value=1, step=1)
         preco_por_unidade = st.number_input("Preço por Unidade:", min_value=0.01, step=0.01)
         num_subunidades = st.number_input("Número de Subunidades:", min_value=1, step=1)
+        subunidades_totais = quantia * num_subunidades
+        quantia_atual = quantia
+        subunidades_restantes = subunidades_totais
 
         preco_por_subunidade = preco_por_unidade / num_subunidades if num_subunidades > 0 else 0
 
         # Adiciona automaticamente a data de validade ao nome do medicamento
         remedio_com_data = f"{remedio} - {data_validade.strftime('%d-%m-%Y')}"  
-        novo_dado = {"Remedio": remedio_com_data, "Data de Validade": data_validade, "Quantia": quantia,
-                     "Preco por Unidade": preco_por_unidade, "Preco por Subunidade": preco_por_subunidade}
+        novo_dado = {"Remedio": remedio_com_data, "Data de Validade": data_validade, "Quantia Inicial": quantia,
+                     "Preco por Unidade": preco_por_unidade, "Preco por Subunidade": preco_por_subunidade,"Subunidades Totais": subunidades_totais, "Subunidades Restantes": subunidades_restantes, "Quantia Atual": quantia_atual}
 
         if st.button("Adicionar"):
             df = pd.concat([df, pd.DataFrame([novo_dado])], ignore_index=True)
@@ -76,15 +86,14 @@ def main():
 
         if not df.empty:
             busca_usuario = st.text_input("Digite o nome do medicamento para buscar:")
-            medicamentos_filtrados = df[df["Remedio"].str.contains(busca_usuario, case=False, na=False)]
-
+            medicamentos_filtrados = df[df["Remedio"].astype(str).str.contains(busca_usuario, case=False, na=False)]
+        
             if medicamentos_filtrados.empty:
                 st.warning("Nenhum medicamento encontrado com o nome digitado.")
             else:
-                # Garanta que a coluna "Data de Validade" seja do tipo datetime
-                medicamentos_filtrados["Data de Validade"] = (medicamentos_filtrados["Data de Validade"])
-
-                # Exibe medicamentos filtrados e formata as datas
+                # Ensure that the "Data de Validade" column is of datetime type
+                medicamentos_filtrados["Data de Validade"] = pd.to_datetime(medicamentos_filtrados["Data de Validade"])
+                # Display filtered medications and format dates
                 st.write(medicamentos_filtrados.assign(**{"Data de Validade": medicamentos_filtrados["Data de Validade"]}))
         else:
             st.warning("Nenhum medicamento cadastrado.")
@@ -96,8 +105,8 @@ def main():
             st.write(df)
 
         busca_medicamento_editar = st.text_input("Digite o nome do medicamento que deseja editar:")
-        medicamentos_filtrados_editar = df[df["Remedio"].str.contains(busca_medicamento_editar, case=False, na=False)]
-
+        medicamentos_filtrados_editar = df[df["Remedio"].astype(str).str.contains(busca_medicamento_editar, case=False, na=False)]
+        
         if not medicamentos_filtrados_editar.empty:
             st.write(medicamentos_filtrados_editar)
         else:
@@ -113,21 +122,37 @@ def main():
             else:
                 st.warning("Medicamento não encontrado. Certifique-se de escolher um medicamento válido.")
 
+        quantia_inicial = df.loc[indice_para_editar, "Quantia Inicial"]
         quantidade_utilizada = st.number_input("Quantidade Utilizada:", min_value=0, step=1)
+        quantia_atual = df.loc[indice_para_editar, "Quantia Atual"]
+        subunidades_totais = df.loc[indice_para_editar, "Subunidades Totais"]
 
-        if st.button("Atualizar Quantidade Utilizada"):
-            if not indice_para_editar.empty:
-                if "Quantia Utilizada" not in df.columns:
-                    df["Quantia Utilizada"] = 0  # Adiciona a coluna se ainda não existir
-                    df.loc[indice_para_editar, "Quantia Utilizada"] += quantidade_utilizada
-        
-            # Verifica se a coluna "Quantia" existe antes de tentar atualizar
-            if "Quantia" in df.columns:
-                df.loc[indice_para_editar, "Quantia"] -= quantidade_utilizada
+        if st.button("Quantidade Utilizada"):   
+            if "Quantia Atual" in df.columns:
+                df.loc[indice_para_editar, "Quantia Atual"] -= quantidade_utilizada
+                df.loc[indice_para_editar, "Subunidades Restantes"] = (subunidades_totais / quantia_inicial) * (quantia_atual - quantidade_utilizada) 
                 save_data(df)
                 st.success(f"{quantidade_utilizada} unidades do medicamento foram utilizadas com sucesso!")
+
+                
+        subunidades_utilizadas = st.number_input("Subunidades Utilizadas:", min_value=0, step=1)
+        
+        if st.button("Subunidades Utilizadas"):
+            if "Subunidades Restantes" in df.columns:
+                num_subunidades = df.loc[indice_para_editar, "Subunidades Restantes"]
+                subunidade_utilizada = subunidades_utilizadas
+    
+                # Calculate the remaining quantity using the calcular_quantias_restantes function
+                df.loc[indice_para_editar, "Quantia Atual"] = df.loc[indice_para_editar, "Quantia Inicial"] * ((df.loc[indice_para_editar, "Quantia Atual"] * (df.loc[indice_para_editar, "Subunidades Totais"] / df.loc[indice_para_editar, "Quantia Inicial"]) - subunidade_utilizada) / df.loc[indice_para_editar, "Subunidades Totais"])
+                
+                # Update "Subunidades Restantes" based on the remaining quantity
+                df.loc[indice_para_editar, "Subunidades Restantes"] -= subunidades_utilizadas
+                save_data(df)
+                st.success(f"{subunidades_utilizadas} unidades do medicamento foram utilizadas com sucesso!")
         else:
             st.write()
+            
+            
     elif choice == "Excluir Medicamento":
         st.header("Excluir Medicamento")
 
