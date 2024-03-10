@@ -75,7 +75,7 @@ def main():
         medicamentos_filtrados = df[(df["Data de Validade"] >= data_inicio) & (df["Data de Validade"] <= data_fim)]
 
         # Exibe medicamentos filtrados e formata as datas
-        st.write(medicamentos_filtrados.assign(**{"Data de Validade": medicamentos_filtrados["Data de Validade"]}))
+        st.dataframe(medicamentos_filtrados.assign(**{"Data de Validade": medicamentos_filtrados["Data de Validade"].dt.strftime('%d/%m/%Y')}), height=100)
     elif choice == "Visualizar Medicamentos":
         columns_to_display = [
             "Remedio",
@@ -103,7 +103,7 @@ def main():
                 # Ensure that the "Data de Validade" column is of datetime type
                 medicamentos_filtrados["Data de Validade"] = pd.to_datetime(medicamentos_filtrados["Data de Validade"])
                 # Display filtered medications and format dates
-                st.dataframe(medicamentos_filtrados[columns_to_display].assign(**{"Data de Validade": medicamentos_filtrados["Data de Validade"]}))
+                st.dataframe(medicamentos_filtrados[columns_to_display].assign(**{"Data de Validade": medicamentos_filtrados["Data de Validade"].dt.strftime('%d/%m/%Y')}))
         else:
             st.warning("Nenhum medicamento cadastrado.")
         
@@ -120,7 +120,7 @@ def main():
     "Subunidades Totais",
     "Subunidades Restantes",
     "Quantia Atual"]
-        st.dataframe(medicamentos_filtrados_editar[columns_to_display], height=600)
+        st.dataframe(medicamentos_filtrados_editar[columns_to_display].assign(**{"Data de Validade": medicamentos_filtrados_editar["Data de Validade"].dt.strftime('%d/%m/%Y')}), height=600)
 
       
         
@@ -182,8 +182,10 @@ def main():
             "Quantia Atual"]
         st.header("Excluir Medicamento")
 
-        st.dataframe(df[columns_to_display])
+        df["Data de Validade"] = pd.to_datetime(df["Data de Validade"])
 
+        st.dataframe(df[columns_to_display].assign(**{"Data de Validade": df["Data de Validade"].dt.strftime('%d/%m/%Y')}))
+        
         # Adicione um botão para excluir todos os medicamentos com quantidade zero
         if st.button("Excluir Medicamentos com Quantidade 0"):
             df = df[df["Quantia"] > 0]
