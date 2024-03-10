@@ -220,7 +220,7 @@ def main():
     
             preco_por_unidade = float(medicamento_info["Preco por Unidade"])
             preco_por_subunidade = float(medicamento_info["Preco por Subunidade"]) if "Preco por Subunidade" in medicamento_info else 0
-            quantidade_disponivel = float(medicamento_info["Quantia"])
+            quantidade_disponivel = float(medicamento_info["Quantia Atual"])
     
             quantidade_utilizada = st.number_input(f"Quantidade Total Utilizada de {remedio}:", min_value=0, step=1)
     
