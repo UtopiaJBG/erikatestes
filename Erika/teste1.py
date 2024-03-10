@@ -77,6 +77,15 @@ def main():
         # Exibe medicamentos filtrados e formata as datas
         st.write(medicamentos_filtrados.assign(**{"Data de Validade": medicamentos_filtrados["Data de Validade"]}))
     elif choice == "Visualizar Medicamentos":
+        columns_to_display = [
+            "Remedio",
+            "Data de Validade",
+            "Quantia Inicial",
+            "Preco por Unidade",
+            "Preco por Subunidade",
+            "Subunidades Totais",
+            "Subunidades Restantes",
+            "Quantia Atual"]
         st.header("Visualizar Medicamentos")
 
         if not df.empty:
@@ -94,7 +103,7 @@ def main():
                 # Ensure that the "Data de Validade" column is of datetime type
                 medicamentos_filtrados["Data de Validade"] = pd.to_datetime(medicamentos_filtrados["Data de Validade"])
                 # Display filtered medications and format dates
-                st.write(medicamentos_filtrados.assign(**{"Data de Validade": medicamentos_filtrados["Data de Validade"]}))
+                st.dataframe(medicamentos_filtrados[columns_to_display].assign(**{"Data de Validade": medicamentos_filtrados["Data de Validade"]}))
         else:
             st.warning("Nenhum medicamento cadastrado.")
         
@@ -162,9 +171,18 @@ def main():
             
             
     elif choice == "Excluir Medicamento":
+        columns_to_display = [
+            "Remedio",
+            "Data de Validade",
+            "Quantia Inicial",
+            "Preco por Unidade",
+            "Preco por Subunidade",
+            "Subunidades Totais",
+            "Subunidades Restantes",
+            "Quantia Atual"]
         st.header("Excluir Medicamento")
 
-        st.write(df)
+        st.dataframe(df[columns_to_display])
 
         # Adicione um botão para excluir todos os medicamentos com quantidade zero
         if st.button("Excluir Medicamentos com Quantidade 0"):
