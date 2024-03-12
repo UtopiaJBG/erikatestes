@@ -5,7 +5,7 @@ from dateutil import parser
 
 original_quantia_atual = 0
 
-csv_url = "https://raw.githubusercontent.com/UtopiaJBG/erikatestes/main/Erika/planilha.csv"
+csv_url = "https://github.com/UtopiaJBG/erikatestes/edit/main/Erika/planilha.csv"
 
 def load_data():
     try:
