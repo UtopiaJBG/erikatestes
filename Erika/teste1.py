@@ -170,14 +170,7 @@ def main():
             st.write()
         def convert_df(df):
             return df.to_csv(index=False, encoding='utf-8-sig').encode('utf-8')
-        if st.button("Baixar Planilha"):
-            st.download_button(
-        "Download Planilha",
-        convert_df(df),  # Use a função de conversão para CSV definida anteriormente
-        "planilha_medicamentos.csv",
-        "text/csv; charset=utf-8-sig",
-        key='download-planilha'
-    )
+
         if st.button("Baixar Planilha"):
             st.download_button(
         "Download Planilha",
