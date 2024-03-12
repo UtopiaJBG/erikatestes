@@ -7,7 +7,7 @@ original_quantia_atual = 0
 
 def load_data():
     try:
-        df = pd.read_csv("planilha1.csv", parse_dates=["Data de Validade"], dayfirst=True)
+        df = pd.read_csv("planilha.csv", parse_dates=["Data de Validade"], dayfirst=True)
     except FileNotFoundError:
         df = pd.DataFrame(columns=["Remedio", "Data de Validade", "Quantia Inicial", "Quantia Atual", "Subunidades Totais", "Subunidades Restantes", "Preco por Unidade", "Preco por Subunidade"])
     
