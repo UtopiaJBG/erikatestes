@@ -9,7 +9,7 @@ def load_data():
     try:
         df = pd.read_csv("planilha.csv", parse_dates=["Data de Validade"], dayfirst=True)
     except FileNotFoundError:
-        df = pd.DataFrame(columns=["Remedio", "Data de Validade", "Quantia", "Preco por Unidade", "Preco por Subunidade"])
+        df = pd.DataFrame(columns=["Remedio", "Data de Validade", "Quantia Inicial", "Quantia Atual", "Subunidades Totais", "Subunidades Restantes", "Preco por Unidade", "Preco por Subunidade"])
     
     # Verifica se a coluna "Data de Validade" contém algum valor nulo
     if df["Data de Validade"].isnull().any():
