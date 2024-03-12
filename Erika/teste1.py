@@ -2,50 +2,67 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime
 from dateutil import parser
+import requests
+from io import StringIO
+
 
 original_quantia_atual = 0
+output_csv_path = "planilha1.csv"
 
-csv_url = "https://raw.githubusercontent.com/UtopiaJBG/erikatestes/main/Erika/planilha.csv"
-
-def load_data():
+def load_data_from_github():
+    csv_url = "https://raw.githubusercontent.com/UtopiaJBG/erikatestes/main/Erika/planilha.csv"
     try:
-        df = pd.read_csv(csv_url, parse_dates=["Data de Validade"], dayfirst=True,encoding='latin-1')
-    except pd.errors.EmptyDataError:
-        st.warning("O arquivo CSV está vazio.")
-        df = pd.DataFrame(columns=["Remedio", "Data de Validade", "Quantia", "Preco por Unidade", "Preco por Subunidade"])
-    except pd.errors.ParserError:
-        st.warning("Erro ao analisar o arquivo CSV. Verifique o formato e a consistência dos dados.")
-        df = pd.DataFrame(columns=["Remedio", "Data de Validade", "Quantia", "Preco por Unidade", "Preco por Subunidade"])
-
-    # Verifica se a coluna "Data de Validade" contém algum valor nulo
-    if df["Data de Validade"].isnull().any():
-        # Se sim, retorne o DataFrame sem alterações
+        # Baixa o conteúdo do arquivo CSV usando requests
+        response = requests.get(csv_url)
+        # Verifica se a requisição foi bem-sucedida
+        response.raise_for_status()
+        # Lê o conteúdo baixado no Pandas DataFrame
+        df = pd.read_csv(StringIO(response.text), parse_dates=["Data de Validade"], dayfirst=True, encoding='latin-1')
         return df
-    
-    # Converte a coluna "Data de Validade" para o formato datetime
-    df["Data de Validade"] = pd.to_datetime(df["Data de Validade"], format="%d/%m/%Y", errors='coerce')
-    
-    return df
+    except requests.exceptions.RequestException as e:
+        st.error(f"Erro ao carregar dados do GitHub: {e}")
+        return pd.DataFrame()
+
+# Função para carregar os dados do arquivo local "planilha1.csv"
+def load_data_locally():
+    file_path = "planilha1.csv"
+    try:
+        # Lê o conteúdo do arquivo CSV no Pandas DataFrame
+        df = pd.read_csv(file_path, parse_dates=["Data de Validade"], dayfirst=True, encoding='latin-1')
+        return df
+    except FileNotFoundError:
+        st.warning(f"Arquivo '{file_path}' não encontrado. Você pode copiar os dados do GitHub primeiro.")
+        return pd.DataFrame()
+
+# Função para salvar os dados no arquivo local "planilha1.csv"
+def save_data_locally(df):
+    file_path = "planilha1.csv"
+    df.to_csv(file_path, index=False)
+    return file_path
+
 
 def calcular_quantias_restantes(original_quantia_atual, num_subunidades, subunidade_utilizada): 
     quantia_restante = ((original_quantia_atual * num_subunidades) - subunidade_utilizada) / num_subunidades      
     return quantia_restante
 
-def save_data(df):
-    df.to_csv("planilha.csv", index=False)
 
 def get_current_date():
     return datetime.now().date()
 
+
 def main():
-    global original_quantia_atual  # Declare the variable as global
     st.title("Gestão de Medicamentos")
 
-    df = load_data()
+    # Carrega os dados localmente
+    df = load_data_locally()
 
-    menu = ["Adicionar Medicamento", "Editar Medicamento", "Excluir Medicamento", "Visualizar Medicamentos", "Custos da Cirurgia ou Procedimento","Filtrar Medicamentos por Data de Validade"]
+    
+
+    menu = ["Adicionar Medicamento", "Editar Medicamento", "Excluir Medicamento", "Visualizar Medicamentos", "Custos da Cirurgia ou Procedimento","Filtrar Medicamentos por Data de Validade","Carregar Dados do GitHub"]
     choice = st.sidebar.selectbox("Selecione uma opção:", menu)
     if choice == "Adicionar Medicamento":
+        
+
         st.header("Adicionar Medicamento")
         
         remedio = st.text_input("Nome do Medicamento:")
@@ -66,8 +83,15 @@ def main():
 
         if st.button("Adicionar"):
             df = pd.concat([df, pd.DataFrame([novo_dado])], ignore_index=True)
-            save_data(df)
+            save_data_locally(df)
             st.success("Medicamento adicionado com sucesso!")
+    elif choice == "Carregar Dados do GitHub":
+        st.header("Carregar Dados do GitHub")
+
+        if st.button("Copiar dados do GitHub para arquivo local"):
+            df_github = load_data_from_github()
+            save_data_locally(df_github)
+            st.success("Dados copiados do GitHub para 'planilha1.csv'")
     elif choice == "Filtrar Medicamentos por Data de Validade":
         st.subheader("Filtrar Medicamentos por Data de Validade")
         
@@ -154,7 +178,7 @@ def main():
             if "Quantia Atual" in df.columns:
                 df.loc[indice_para_editar, "Quantia Atual"] -= quantidade_utilizada
                 df.loc[indice_para_editar, "Subunidades Restantes"] = (subunidades_totais / quantia_inicial) * (quantia_atual - quantidade_utilizada) 
-                save_data(df)
+                save_data_locally(df)
                 st.success(f"{quantidade_utilizada} unidades do medicamento foram utilizadas com sucesso!")
 
                 
@@ -170,13 +194,13 @@ def main():
                 
                 # Update "Subunidades Restantes" based on the remaining quantity
                 df.loc[indice_para_editar, "Subunidades Restantes"] -= subunidades_utilizadas
-                save_data(df)
+                save_data_locally(df)
                 st.success(f"{subunidades_utilizadas} unidades do medicamento foram utilizadas com sucesso!")
         else:
             st.write()
+        
         def convert_df(df):
             return df.to_csv(index=False, encoding='utf-8-sig').encode('utf-8')
-
         if st.button("Baixar Planilha"):
             st.download_button(
         "Download Planilha",
@@ -184,7 +208,9 @@ def main():
         "planilha_medicamentos.csv",
         "text/csv; charset=utf-8-sig",
         key='download-planilha'
-    )            
+    )
+            
+            
     elif choice == "Excluir Medicamento":
         columns_to_display = [
             "Remedio",
@@ -204,7 +230,7 @@ def main():
         # Adicione um botão para excluir todos os medicamentos com quantidade zero
         if st.button("Excluir Medicamentos com Quantidade 0"):
             df = df[df["Quantia"] > 0]
-            save_data(df)
+            save_data_locally(df)
             st.success("Medicamentos com quantidade zero foram excluídos com sucesso!")
         # Use a função autocomplete para fornecer sugestões
         remedios_sugeridos = df["Remedio"].unique()
@@ -213,7 +239,7 @@ def main():
         if st.button("Excluir Medicamento"):
             if remedio_selecionado is not None:
                 df = df[df["Remedio"] != remedio_selecionado]
-                save_data(df)
+                save_data_locally(df)
                 st.success(f"Medicamento '{remedio_selecionado}' excluído com sucesso!")
             else:
                 st.warning("Por favor, escolha um medicamento válido.")
