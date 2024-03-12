@@ -5,12 +5,18 @@ from dateutil import parser
 
 original_quantia_atual = 0
 
+csv_url = "https://raw.githubusercontent.com/UtopiaJBG/erikatestes/main/Erika/planilha.csv"
+
 def load_data():
     try:
-        df = pd.read_csv("planilha.csv", parse_dates=["Data de Validade"], dayfirst=True)
-    except FileNotFoundError:
-        df = pd.DataFrame(columns=["Remedio", "Data de Validade", "Quantia Inicial", "Quantia Atual", "Subunidades Totais", "Subunidades Restantes", "Preco por Unidade", "Preco por Subunidade"])
-    
+        df = pd.read_csv(csv_url, parse_dates=["Data de Validade"], dayfirst=True,encoding='latin-1')
+    except pd.errors.EmptyDataError:
+        st.warning("O arquivo CSV está vazio.")
+        df = pd.DataFrame(columns=["Remedio", "Data de Validade", "Quantia", "Preco por Unidade", "Preco por Subunidade"])
+    except pd.errors.ParserError:
+        st.warning("Erro ao analisar o arquivo CSV. Verifique o formato e a consistência dos dados.")
+        df = pd.DataFrame(columns=["Remedio", "Data de Validade", "Quantia", "Preco por Unidade", "Preco por Subunidade"])
+
     # Verifica se a coluna "Data de Validade" contém algum valor nulo
     if df["Data de Validade"].isnull().any():
         # Se sim, retorne o DataFrame sem alterações
