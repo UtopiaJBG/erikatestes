@@ -29,6 +29,8 @@ def load_data_locally():
     try:
         # Lê o conteúdo do arquivo CSV no Pandas DataFrame
         df = pd.read_csv(file_path, parse_dates=["Data de Validade"], dayfirst=True, encoding='latin-1')
+        df["Data de Validade"] = pd.to_datetime(df["Data de Validade"], errors='coerce')
+
         return df
     except FileNotFoundError:
         st.warning(f"Arquivo '{file_path}' não encontrado. Você pode copiar os dados do GitHub primeiro.")
