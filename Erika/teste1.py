@@ -63,15 +63,14 @@ def main():
     menu = ["Adicionar Medicamento", "Editar Medicamento", "Excluir Medicamento", "Visualizar Medicamentos", "Custos da Cirurgia ou Procedimento","Filtrar Medicamentos por Data de Validade","Carregar Dados do GitHub"]
     choice = st.sidebar.selectbox("Selecione uma opção:", menu)
     if choice == "Adicionar Medicamento":
-        
-
         st.header("Adicionar Medicamento")
-        
+
         remedio = st.text_input("Nome do Medicamento:")
         data_validade = st.date_input("Data de Validade:", value=get_current_date(), format="DD/MM/YYYY")
         quantia = st.number_input("Quantidade:", min_value=1, step=1)
         preco_por_unidade = st.number_input("Preço por Unidade:", min_value=0.01, step=0.01)
         num_subunidades = st.number_input("Número de Subunidades:", min_value=1, step=1)
+
         subunidades_totais = quantia * num_subunidades
         quantia_atual = quantia
         subunidades_restantes = subunidades_totais
@@ -81,9 +80,14 @@ def main():
         # Adiciona automaticamente a data de validade ao nome do medicamento
         remedio_com_data = f"{remedio} - {data_validade.strftime('%d-%m-%Y')}"  
         novo_dado = {"Remedio": remedio_com_data, "Data de Validade": data_validade, "Quantia Inicial": quantia,
-                     "Preco por Unidade": preco_por_unidade, "Preco por Subunidade": preco_por_subunidade,"Subunidades Totais": subunidades_totais, "Subunidades Restantes": subunidades_restantes, "Quantia Atual": quantia_atual}
+                     "Preco por Unidade": preco_por_unidade, "Preco por Subunidade": preco_por_subunidade,
+                     "Subunidades Totais": subunidades_totais, "Subunidades Restantes": subunidades_restantes,
+                     "Quantia Atual": quantia_atual}
 
         if st.button("Adicionar"):
+            # Converta a data novamente para o formato esperado ao adicionar o novo dado
+            novo_dado["Data de Validade"] = pd.to_datetime(novo_dado["Data de Validade"], errors='coerce')
+
             df = pd.concat([df, pd.DataFrame([novo_dado])], ignore_index=True)
             save_data_locally(df)
             st.success("Medicamento adicionado com sucesso!")
