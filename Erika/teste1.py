@@ -103,15 +103,20 @@ def main():
         
         data_inicio = st.date_input("Data Inicial:")
         data_fim = st.date_input("Data Final:")
-
-        # Converte as datas para o formato esperado pelo pandas
-        data_inicio = parser.parse(str(data_inicio)).strftime("%Y-%m-%d")
-        data_fim = parser.parse(str(data_fim)).strftime("%Y-%m-%d")
-
+    
+        # Converte as datas para o formato de datetime
+        data_inicio = pd.to_datetime(data_inicio)
+        data_fim = pd.to_datetime(data_fim)
+    
+        # Filtra os medicamentos por data de validade
         medicamentos_filtrados = df[(df["Data de Validade"] >= data_inicio) & (df["Data de Validade"] <= data_fim)]
-
+    
+        # Ordena os medicamentos filtrados por data de validade
+        medicamentos_filtrados["Data de Validade"] = medicamentos_filtrados["Data de Validade"].dt.strftime('%d/%m/%Y')
+        medicamentos_filtrados = medicamentos_filtrados.sort_values(by=["Data de Validade"])
+    
         # Exibe medicamentos filtrados e formata as datas
-        st.dataframe(medicamentos_filtrados.assign(**{"Data de Validade": medicamentos_filtrados["Data de Validade"].dt.strftime('%d/%m/%Y')}), height=100)
+        st.dataframe(medicamentos_filtrados, height=100)
     elif choice == "Visualizar Medicamentos":
         columns_to_display = [
             "Remedio",
