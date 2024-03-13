@@ -116,7 +116,7 @@ def main():
         medicamentos_filtrados = medicamentos_filtrados.sort_values(by=["Data de Validade"])
     
         # Exibe medicamentos filtrados e formata as datas
-        st.dataframe(medicamentos_filtrados, height=100)
+        st.dataframe(medicamentos_filtrados, height=500)
     elif choice == "Visualizar Medicamentos":
         columns_to_display = [
             "Remedio",
