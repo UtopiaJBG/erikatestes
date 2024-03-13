@@ -150,23 +150,28 @@ def main():
     elif choice == "Editar Medicamento":
         busca_medicamento_editar = st.text_input("Digite o nome do medicamento que deseja editar:")
         medicamentos_filtrados_editar = df[df["Remedio"].astype(str).str.contains(busca_medicamento_editar, case=False, na=False)]
+        
         st.header("Editar Medicamento")
-        columns_to_display = [
-    "Remedio",
-    "Data de Validade",
-    "Quantia Inicial",
-    "Preco por Unidade",
-    "Preco por Subunidade",
-    "Subunidades Totais",
-    "Subunidades Restantes",
-    "Quantia Atual"]
+        
+        # Ordena os medicamentos filtrados por data de validade
         medicamentos_filtrados_editar["Data de Validade"] = pd.to_datetime(medicamentos_filtrados_editar["Data de Validade"])
         medicamentos_filtrados_editar = medicamentos_filtrados_editar.sort_values(by=["Data de Validade"])
         
         # Converte as datas para o formato esperado pelo pandas
         medicamentos_filtrados_editar["Data de Validade"] = medicamentos_filtrados_editar["Data de Validade"].dt.strftime('%d/%m/%Y')
-        st.dataframe(medicamentos_filtrados_editar[columns_to_display].assign(**{"Data de Validade": medicamentos_filtrados_editar["Data de Validade"].dt.strftime('%d/%m/%Y')}), height=600)
-
+        
+        columns_to_display = [
+            "Remedio",
+            "Data de Validade",
+            "Quantia Inicial",
+            "Preco por Unidade",
+            "Preco por Subunidade",
+            "Subunidades Totais",
+            "Subunidades Restantes",
+            "Quantia Atual"]
+        
+        st.dataframe(medicamentos_filtrados_editar[columns_to_display], height=600)
+      
       
       
         
