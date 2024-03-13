@@ -132,14 +132,18 @@ def main():
         if not df.empty:
             busca_usuario = st.text_input("Digite o nome do medicamento para buscar:")
             medicamentos_filtrados = df[df["Remedio"].astype(str).str.contains(busca_usuario, case=False, na=False)]
-        
-            if medicamentos_filtrados.empty:
-                st.warning("Nenhum medicamento encontrado com o nome digitado.")
-            else:
-                # Ensure that the "Data de Validade" column is of datetime type
+    
+            if not medicamentos_filtrados.empty:
+                # Converte a coluna "Data de Validade" para datetime64
                 medicamentos_filtrados["Data de Validade"] = pd.to_datetime(medicamentos_filtrados["Data de Validade"])
-                # Display filtered medications and format dates
+    
+                # Ordena os medicamentos filtrados por data de validade
+                medicamentos_filtrados = medicamentos_filtrados.sort_values(by=["Data de Validade"])
+    
+                # Exibe medicamentos filtrados e formata as datas
                 st.dataframe(medicamentos_filtrados[columns_to_display].assign(**{"Data de Validade": medicamentos_filtrados["Data de Validade"].dt.strftime('%d/%m/%Y')}))
+            else:
+                st.warning("Nenhum medicamento encontrado com o nome digitado.")
         else:
             st.warning("Nenhum medicamento cadastrado.")
         
