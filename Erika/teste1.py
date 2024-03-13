@@ -160,8 +160,14 @@ def main():
     "Subunidades Totais",
     "Subunidades Restantes",
     "Quantia Atual"]
+        medicamentos_filtrados_editar["Data de Validade"] = pd.to_datetime(medicamentos_filtrados_editar["Data de Validade"])
+        medicamentos_filtrados_editar = medicamentos_filtrados_editar.sort_values(by=["Data de Validade"])
+
+        # Converte as datas para o formato esperado pelo pandas
+        medicamentos_filtrados_editar["Data de Validade"] = medicamentos_filtrados_editar["Data de Validade"].dt.strftime('%d/%m/%Y')
         st.dataframe(medicamentos_filtrados_editar[columns_to_display].assign(**{"Data de Validade": medicamentos_filtrados_editar["Data de Validade"].dt.strftime('%d/%m/%Y')}), height=600)
 
+      
       
         
         if not medicamentos_filtrados_editar.empty:
