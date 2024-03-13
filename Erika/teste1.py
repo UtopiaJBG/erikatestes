@@ -112,11 +112,12 @@ def main():
         medicamentos_filtrados = df[(df["Data de Validade"] >= data_inicio) & (df["Data de Validade"] <= data_fim)]
     
         # Ordena os medicamentos filtrados por data de validade
-        medicamentos_filtrados["Data de Validade"] = medicamentos_filtrados["Data de Validade"].dt.strftime('%d/%m/%Y')
+        medicamentos_filtrados["Data de Validade"] = pd.to_datetime(medicamentos_filtrados["Data de Validade"])
         medicamentos_filtrados = medicamentos_filtrados.sort_values(by=["Data de Validade"])
     
         # Exibe medicamentos filtrados e formata as datas
-        st.dataframe(medicamentos_filtrados, height=500)
+        st.dataframe(medicamentos_filtrados.assign(**{"Data de Validade": medicamentos_filtrados["Data de Validade"].dt.strftime('%d/%m/%Y')}), height=600)
+
     elif choice == "Visualizar Medicamentos":
         columns_to_display = [
             "Remedio",
