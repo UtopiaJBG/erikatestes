@@ -94,7 +94,7 @@ def main():
             save_data_locally(df)
             st.success("Medicamento adicionado com sucesso!")
     elif choice == "Carregar Dados do GitHub":
-        st.image("logo.png",  width=400)
+        st.image("Erika/logo.png",  width=400)
 
         st.header("Carregar Dados do GitHub")
 
@@ -104,7 +104,7 @@ def main():
             st.success("Dados copiados do GitHub para 'planilha1.csv'")
 
     elif choice == "Filtrar Medicamentos por Data de Validade":
-        st.image("logo.png",  width=400)
+        st.image("Erika/logo.png",  width=400)
 
         st.subheader("Filtrar Medicamentos por Data de Validade")
         
@@ -126,7 +126,7 @@ def main():
         st.dataframe(medicamentos_filtrados, height=500)
 
     elif choice == "Visualizar Medicamentos":
-        st.image("logo.png",  width=400)
+        st.image("Erika/logo.png",  width=400)
 
         columns_to_display = [
             "Remedio",
@@ -159,7 +159,7 @@ def main():
             st.warning("Nenhum medicamento cadastrado.")
         
     elif choice == "Editar Medicamento":
-        st.image("logo.png",  width=400)
+        st.image("Erika/logo.png",  width=400)
 
         busca_medicamento_editar = st.text_input("Digite o nome do medicamento que deseja editar:")
         medicamentos_filtrados_editar = df[df["Remedio"].astype(str).str.contains(busca_medicamento_editar, case=False, na=False)]
@@ -244,7 +244,7 @@ def main():
             
             
     elif choice == "Excluir Medicamento":
-        st.image("logo.png",  width=400)
+        st.image("Erika/logo.png",  width=400)
 
         columns_to_display = [
             "Remedio",
@@ -331,7 +331,7 @@ def main():
         st.write(tabela_quantidades)
     
         # Adiciona as informações do paciente à tabela_quantidades
-        st.image("logo.png",  width=400)
+        st.image("Erika/logo.png",  width=400)
 
         tabela_quantidades["Nome do Paciente"] = nome_paciente
         tabela_quantidades["Tipo de Procedimento"] = tipo_procedimento
