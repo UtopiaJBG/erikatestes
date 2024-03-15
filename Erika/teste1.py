@@ -63,6 +63,8 @@ def main():
     menu = ["Adicionar Medicamento", "Editar Medicamento", "Excluir Medicamento", "Visualizar Medicamentos", "Custos da Cirurgia ou Procedimento","Filtrar Medicamentos por Data de Validade","Carregar Dados do GitHub"]
     choice = st.sidebar.selectbox("Selecione uma opção:", menu)
     if choice == "Adicionar Medicamento":
+        st.image("logo.png", use_column_width=True)
+
         st.header("Adicionar Medicamento")
 
         remedio = st.text_input("Nome do Medicamento:")
@@ -92,13 +94,18 @@ def main():
             save_data_locally(df)
             st.success("Medicamento adicionado com sucesso!")
     elif choice == "Carregar Dados do GitHub":
+        st.image("logo.png", use_column_width=True)
+
         st.header("Carregar Dados do GitHub")
 
         if st.button("Copiar dados do GitHub para arquivo local"):
             df_github = load_data_from_github()
             save_data_locally(df_github)
             st.success("Dados copiados do GitHub para 'planilha1.csv'")
+
     elif choice == "Filtrar Medicamentos por Data de Validade":
+        st.image("logo.png", use_column_width=True)
+
         st.subheader("Filtrar Medicamentos por Data de Validade")
         
         data_inicio = st.date_input("Data Inicial:")
@@ -112,13 +119,15 @@ def main():
         medicamentos_filtrados = df[(df["Data de Validade"] >= data_inicio) & (df["Data de Validade"] <= data_fim)]
     
         # Ordena os medicamentos filtrados por data de validade
-        medicamentos_filtrados["Data de Validade"] = pd.to_datetime(medicamentos_filtrados["Data de Validade"])
+        medicamentos_filtrados["Data de Validade"] = medicamentos_filtrados["Data de Validade"].dt.strftime('%d/%m/%Y')
         medicamentos_filtrados = medicamentos_filtrados.sort_values(by=["Data de Validade"])
     
         # Exibe medicamentos filtrados e formata as datas
-        st.dataframe(medicamentos_filtrados.assign(**{"Data de Validade": medicamentos_filtrados["Data de Validade"].dt.strftime('%d/%m/%Y')}), height=600)
+        st.dataframe(medicamentos_filtrados, height=500)
 
     elif choice == "Visualizar Medicamentos":
+        st.image("logo.png", use_column_width=True)
+
         columns_to_display = [
             "Remedio",
             "Data de Validade",
@@ -138,22 +147,20 @@ def main():
         if not df.empty:
             busca_usuario = st.text_input("Digite o nome do medicamento para buscar:")
             medicamentos_filtrados = df[df["Remedio"].astype(str).str.contains(busca_usuario, case=False, na=False)]
-    
-            if not medicamentos_filtrados.empty:
-                # Converte a coluna "Data de Validade" para datetime64
-                medicamentos_filtrados["Data de Validade"] = pd.to_datetime(medicamentos_filtrados["Data de Validade"])
-    
-                # Ordena os medicamentos filtrados por data de validade
-                medicamentos_filtrados = medicamentos_filtrados.sort_values(by=["Data de Validade"])
-    
-                # Exibe medicamentos filtrados e formata as datas
-                st.dataframe(medicamentos_filtrados[columns_to_display].assign(**{"Data de Validade": medicamentos_filtrados["Data de Validade"].dt.strftime('%d/%m/%Y')}))
-            else:
+        
+            if medicamentos_filtrados.empty:
                 st.warning("Nenhum medicamento encontrado com o nome digitado.")
+            else:
+                # Ensure that the "Data de Validade" column is of datetime type
+                medicamentos_filtrados["Data de Validade"] = pd.to_datetime(medicamentos_filtrados["Data de Validade"])
+                # Display filtered medications and format dates
+                st.dataframe(medicamentos_filtrados[columns_to_display].assign(**{"Data de Validade": medicamentos_filtrados["Data de Validade"].dt.strftime('%d/%m/%Y')}))
         else:
             st.warning("Nenhum medicamento cadastrado.")
         
     elif choice == "Editar Medicamento":
+        st.image("logo.png", use_column_width=True)
+
         busca_medicamento_editar = st.text_input("Digite o nome do medicamento que deseja editar:")
         medicamentos_filtrados_editar = df[df["Remedio"].astype(str).str.contains(busca_medicamento_editar, case=False, na=False)]
         
@@ -177,8 +184,6 @@ def main():
             "Quantia Atual"]
         
         st.dataframe(medicamentos_filtrados_editar[columns_to_display], height=600)
-      
-      
       
         
         if not medicamentos_filtrados_editar.empty:
@@ -239,6 +244,8 @@ def main():
             
             
     elif choice == "Excluir Medicamento":
+        st.image("logo.png", use_column_width=True)
+
         columns_to_display = [
             "Remedio",
             "Data de Validade",
@@ -324,6 +331,8 @@ def main():
         st.write(tabela_quantidades)
     
         # Adiciona as informações do paciente à tabela_quantidades
+        st.image("logo.png", use_column_width=True)
+
         tabela_quantidades["Nome do Paciente"] = nome_paciente
         tabela_quantidades["Tipo de Procedimento"] = tipo_procedimento
         tabela_quantidades["Data do Procedimento"] = data_procedimento.strftime('%d/%m/%Y')
