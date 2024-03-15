@@ -63,7 +63,7 @@ def main():
     menu = ["Adicionar Medicamento", "Editar Medicamento", "Excluir Medicamento", "Visualizar Medicamentos", "Custos da Cirurgia ou Procedimento","Filtrar Medicamentos por Data de Validade","Carregar Dados do GitHub"]
     choice = st.sidebar.selectbox("Selecione uma opção:", menu)
     if choice == "Adicionar Medicamento":
-        st.image("logo.png",  width=400)
+        st.image("Erika/logo.png",  width=400)
 
         st.header("Adicionar Medicamento")
 
