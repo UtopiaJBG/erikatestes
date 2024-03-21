@@ -17,7 +17,7 @@ def load_data_from_github():
         # Verifica se a requisição foi bem-sucedida
         response.raise_for_status()
         # Lê o conteúdo baixado no Pandas DataFrame
-        df = pd.read_csv(StringIO(response.text), parse_dates=["Data de Validade"], dayfirst=True, encoding=''utf-8'', sep=';')
+        df = pd.read_csv(StringIO(response.text), parse_dates=["Data de Validade"], dayfirst=True, encoding='utf-8', sep=';')
         return df
     except requests.exceptions.RequestException as e:
         st.error(f"Erro ao carregar dados do GitHub: {e}")
