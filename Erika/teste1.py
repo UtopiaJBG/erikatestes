@@ -28,7 +28,7 @@ def load_data_locally():
     file_path = "planilha1.csv"
     try:
         # Lê o conteúdo do arquivo CSV no Pandas DataFrame
-        df = pd.read_csv(file_path, parse_dates=["Data de Validade"], dayfirst=True, encoding=''utf-8'')
+        df = pd.read_csv(file_path, parse_dates=["Data de Validade"], dayfirst=True, encoding='utf-8')
         df["Data de Validade"] = pd.to_datetime(df["Data de Validade"], errors='coerce')
 
         return df
