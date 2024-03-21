@@ -17,7 +17,7 @@ def load_data_from_github():
         # Verifica se a requisição foi bem-sucedida
         response.raise_for_status()
         # Lê o conteúdo baixado no Pandas DataFrame
-        df = pd.read_csv(StringIO(response.text), parse_dates=["Data de Validade"], dayfirst=True, encoding='latin-1', sep=';')
+        df = pd.read_csv(StringIO(response.text), parse_dates=["Data de Validade"], dayfirst=True, encoding=''utf-8'', sep=';')
         return df
     except requests.exceptions.RequestException as e:
         st.error(f"Erro ao carregar dados do GitHub: {e}")
@@ -28,7 +28,7 @@ def load_data_locally():
     file_path = "planilha1.csv"
     try:
         # Lê o conteúdo do arquivo CSV no Pandas DataFrame
-        df = pd.read_csv(file_path, parse_dates=["Data de Validade"], dayfirst=True, encoding='latin-1')
+        df = pd.read_csv(file_path, parse_dates=["Data de Validade"], dayfirst=True, encoding=''utf-8'')
         df["Data de Validade"] = pd.to_datetime(df["Data de Validade"], errors='coerce')
 
         return df
