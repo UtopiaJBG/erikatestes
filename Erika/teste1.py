@@ -5,7 +5,7 @@ from dateutil import parser
 import requests
 from io import StringIO
 
-
+x = 10
 original_quantia_atual = 0
 output_csv_path = "planilha1.csv"
 
