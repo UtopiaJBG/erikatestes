@@ -5,7 +5,7 @@ from dateutil import parser
 import requests
 from io import StringIO
 
-x = 10
+
 original_quantia_atual = 0
 output_csv_path = "planilha1.csv"
 
@@ -28,7 +28,7 @@ def load_data_locally():
     file_path = "planilha1.csv"
     try:
         # Lê o conteúdo do arquivo CSV no Pandas DataFrame
-        df = pd.read_csv(file_path, parse_dates=["Data de Validade"], dayfirst=True, encoding='latin-1')
+        df = pd.read_csv(file_path, encoding='latin-1')
         df["Data de Validade"] = pd.to_datetime(df["Data de Validade"], errors='coerce')
 
         return df
